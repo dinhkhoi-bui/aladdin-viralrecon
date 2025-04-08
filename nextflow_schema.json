@@ -18,7 +18,7 @@
             "fa_icon": "fas fa-terminal",
             "description": "Define where the pipeline should find input data and save output data.",
             "help-text": "",
-            "required": ["input", "platform", "protocol"],
+            "required": ["input"],
             "properties": {
                 "input": {
                     "type": "string",
@@ -172,7 +172,7 @@
                     "hidden": true
                 }
             },
-            "required": ["genome", "fasta", "gff"]
+            "required": ["genome", "fasta"]
         },
         "nanopore_options": {
             "title": "Nanopore options",
@@ -268,7 +268,7 @@
                     "hidden": true
                 }
             },
-            "required": ["artic_minion_caller", "artic_minion_aligner"]
+            "required": []
         },
         "nanopore_illumina_options": {
             "title": "Nanopore/Illumina options",
@@ -419,7 +419,7 @@
                 }
             },
             "fa_icon": "fas fa-retweet",
-            "required": ["freyja_depthcutoff"]
+            "required": []
         },
         "illumina_qc_read_trimming_and_filtering_options": {
             "title": "Illumina QC, read trimming and filtering options",
@@ -490,7 +490,7 @@
                 }
             },
             "fa_icon": "fas fa-cut",
-            "required": ["kraken2_variants_host_filter", "kraken2_assembly_host_filter"]
+            "required": []
         },
         "illumina_variant_calling_options": {
             "title": "Illumina variant calling options",
@@ -600,7 +600,7 @@
                 }
             },
             "fa_icon": "fas fa-dna",
-            "required": ["variant_caller", "consensus_caller"]
+            "required": []
         },
         "illumina_de_novo_assembly_options": {
             "title": "Illumina de novo assembly options",
