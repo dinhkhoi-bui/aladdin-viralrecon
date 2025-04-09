@@ -326,10 +326,10 @@ sp:
   cutadapt:
     fn: "*.cutadapt.log"
   quast:
-    fn: '*.tsv'
+    fn: "*.tsv"
   amplicon_heatmap:
-    fn: 'amplicon_heatmap_mqc.tsv'
+    fn: "amplicon_heatmap_mqc.tsv"
   summary_variants_metrics:
-    fn: 'summary_variants_metrics_mqc.csv'
+    fn: "summary_variants_metrics_mqc.csv"
   summary_assembly_metrics:
-    fn: 'summary_assembly_metrics_mqc.csv'
+    fn: "summary_assembly_metrics_mqc.csv"

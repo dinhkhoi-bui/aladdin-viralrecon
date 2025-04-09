@@ -1,5 +1,5 @@
 {
-    "$schema": "http://json-schema.org/draft-07/schema",
+    "$schema": "https://json-schema.org/draft-07/schema",
     "$id": "https://raw.githubusercontent.com/nf-core/viralrecon/master/nextflow_schema.json",
     "title": "nf-core/viralrecon pipeline parameters",
     "description": "Assembly and intrahost/low-frequency variant calling for viral samples",
@@ -7,9 +7,7 @@
     "type": "object",
     "metadata_columns": {
         "type": "object",
-        "properties": {
-
-        }
+        "properties": {}
     },
     "definitions": {
         "input_output_options": {
@@ -18,7 +16,7 @@
             "fa_icon": "fas fa-terminal",
             "description": "Define where the pipeline should find input data and save output data.",
             "help-text": "",
-            "required": [],
+            "required": ["platform", "protocol"],
             "properties": {
                 "input": {
                     "type": "string",
@@ -34,6 +32,7 @@
                 },
                 "platform": {
                     "type": "string",
+                    "default": "illumina",
                     "fa_icon": "fas fa-hdd",
                     "description": "NGS platform used to sequence the samples.",
                     "enum": ["illumina", "nanopore"],
@@ -41,6 +40,7 @@
                 },
                 "protocol": {
                     "type": "string",
+                    "default": "amplicon",
                     "description": "Specifies the type of protocol used for sequencing.",
                     "fa_icon": "fas fa-vials",
                     "enum": ["metagenomic", "amplicon"],
@@ -500,6 +500,7 @@
             "properties": {
                 "variant_caller": {
                     "type": "string",
+                    "default": "bcftools",
                     "fa_icon": "fas fa-phone-volume",
                     "description": "Specify which variant calling algorithm you would like to use. Available options are 'ivar' (default for '--protocol amplicon') and 'bcftools' (default for '--protocol metagenomic').",
                     "enum": ["ivar", "bcftools"],
@@ -600,7 +601,7 @@
                 }
             },
             "fa_icon": "fas fa-dna",
-            "required": []
+            "required": ["variant_caller", "consensus_caller"]
         },
         "illumina_de_novo_assembly_options": {
             "title": "Illumina de novo assembly options",
@@ -631,7 +632,8 @@
                         "rna",
                         "bio"
                     ],
-                    "hidden": false
+                    "hidden": false,
+                    "advanced": true
                 },
                 "spades_hmm": {
                     "type": "string",
@@ -706,7 +708,7 @@
                 }
             },
             "fa_icon": "fas fa-random",
-            "required": ["assemblers", "spades_mode"]
+            "required": ["assemblers"]
         },
         "generic_options": {
             "title": "Generic options",
