@@ -56,7 +56,7 @@ workflow PIPELINE_INITIALISATION {
     //
     pre_help_text = nfCoreLogo(monochrome_logs)
     post_help_text = '\n' + workflowCitation() + '\n' + dashedLine(monochrome_logs)
-    def String workflow_command = "nextflow run ${workflow.manifest.name} -profile <docker/singularity/.../institute> --input samplesheet.csv --outdir <OUTDIR>"
+    def String workflow_command = "nextflow run ${workflow.manifest.name} -profile <docker/singularity/.../institute> --design samplesheet.csv --outdir <OUTDIR>"
     UTILS_NFVALIDATION_PLUGIN (
         help,
         workflow_command,
@@ -78,11 +78,11 @@ workflow PIPELINE_INITIALISATION {
     validateInputParameters()
 
     //
-    // Create channel from input file provided through params.input
+    // Create channel from input file provided through params.design
     //
     if (params.platform == 'illumina') {
         Channel
-            .fromSamplesheet("input")
+            .fromSamplesheet("design")
             .map {
                 meta, fastq_1, fastq_2, barcode->
                     if (!fastq_2) {
@@ -104,7 +104,7 @@ workflow PIPELINE_INITIALISATION {
         ch_samplesheet = Channel.empty()
         if (input){
             Channel
-                .fromSamplesheet("input")
+                .fromSamplesheet("design")
                 .map {
                     meta, fastq_1, fastq_2, barcode->
                         tuple( "barcode"+ String.format('%02d', barcode).toString(), meta.id)

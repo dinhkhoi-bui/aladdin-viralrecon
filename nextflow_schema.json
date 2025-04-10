@@ -18,7 +18,7 @@
             "help-text": "",
             "required": ["platform", "protocol"],
             "properties": {
-                "input": {
+                "design": {
                     "type": "string",
                     "format": "file-path",
                     "exists": true,
@@ -968,8 +968,10 @@
                 }
             },
             "then": {
-                "nanopore_options": {
-                    "hidden": true
+                "properties": {
+                    "protocol": { "enum": ["amplicon", "metagenomic"] },
+                    "fastq_dir": { "hidden": true },
+                    "fast5_dir": { "hidden": true }
                 }
             }
         },

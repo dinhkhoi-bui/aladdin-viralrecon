@@ -27,14 +27,14 @@ def valid_params = [
 
 // Check input path parameters to see if they exist
 def checkPathParamList = [
-    params.input, params.fasta, params.gff, params.bowtie2_index,params.bwamem_index,
+    params.design, params.fasta, params.gff, params.bowtie2_index,params.bwamem_index,
     params.kraken2_db, params.viral_db, params.primer_bed, params.primer_fasta,
     params.blast_db, params.spades_hmm, params.multiqc_config,
     params.freyja_barcodes, params.freyja_lineages, params.additional_annotation
 ]
 for (param in checkPathParamList) { if (param) { file(param, checkIfExists: true) } }
 
-if (params.input)                 { ch_input          = file(params.input)                 } else { exit 1, 'Input samplesheet file not specified!' }
+if (params.design)                { ch_input          = file(params.design)                } else { exit 1, 'Input samplesheet file not specified!' }
 if (params.spades_hmm)            { ch_spades_hmm     = file(params.spades_hmm)            } else { ch_spades_hmm = []                              }
 if (params.additional_annotation) { ch_additional_gtf = file(params.additional_annotation) } else { additional_annotation = []                      }
 
@@ -126,7 +126,7 @@ def fail_mapped_reads = [:]
 workflow ILLUMINA {
 
     take:
-    ch_samplesheet // channel: samplesheet read in from --input
+    ch_samplesheet // channel: samplesheet read in from --design
     ch_genome_fasta
     ch_genome_gff
     ch_primer_bed

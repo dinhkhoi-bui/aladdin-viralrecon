@@ -71,7 +71,7 @@ params.nextclade_dataset_tag       = getGenomeAttribute('nextclade_dataset_tag')
 workflow NFCORE_VIRALRECON {
 
     take:
-    samplesheet // channel: samplesheet read in from --input
+    samplesheet // channel: samplesheet read in from --design
 
     main:
 
@@ -143,7 +143,7 @@ workflow {
         params.monochrome_logs,
         args,
         params.outdir,
-        params.input
+        params.design
     )
 
     //
