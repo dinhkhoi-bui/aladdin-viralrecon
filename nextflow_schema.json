@@ -80,7 +80,8 @@
                     "description": "Name of viral reference genome.",
                     "fa_icon": "fas fa-book",
                     "hidden": false,
-                    "help_text": "You can find the keys to specify the genomes in the [Genomes config file](https://github.com/nf-core/configs/blob/master/conf/pipeline/viralrecon/genomes.config)."
+                    "help_text": "You can find the keys to specify the genomes in the [Genomes config file](https://github.com/nf-core/configs/blob/master/conf/pipeline/viralrecon/genomes.config).",
+                    "enum": ["NC_045512.2", "MN908947.3", "NC_063383.1", "ON563414.3", "MT903344.1"]
                 },
                 "fasta": {
                     "type": "string",
@@ -88,7 +89,7 @@
                     "mimetype": "text/plain",
                     "pattern": "^\\S+\\.fn?a(sta)?(\\.gz)?$",
                     "fa_icon": "fas fa-font",
-                    "hidden": false,
+                    "hidden": true,
                     "description": "Path to FASTA genome file.",
                     "help_text": "If you have no genome reference available, the pipeline can build one using a FASTA file. This requires additional time and resources, so it's better to use a pre-build index if possible."
                 },
@@ -99,7 +100,7 @@
                     "pattern": "^\\S+\\.gff(\\.gz)?$",
                     "description": "Full path to GFF annotation file.",
                     "fa_icon": "fas fa-file-invoice",
-                    "hidden": false
+                    "hidden": true
                 },
                 "additional_annotation": {
                     "type": "string",
@@ -142,14 +143,16 @@
                     "fa_icon": "fas fa-sliders-h",
                     "description": "The primer set to be used for the data analysis.",
                     "help_text": "Where possible we are trying to collate links and settings for standard primer sets to make it easier to run the pipeline with standard keys. See https://github.com/nf-core/configs/blob/master/conf/pipeline/viralrecon/genomes.config",
-                    "hidden": true
+                    "hidden": true,
+                    "advanced": true
                 },
                 "primer_set_version": {
                     "type": "number",
                     "fa_icon": "fas fa-code-branch",
                     "description": "Version of the primer set e.g. '--primer_set artic --primer_set_version 3'.",
                     "help_text": "Where possible we are trying to collate links and settings for standard primer sets to make it easier to run the pipeline with standard keys. See https://github.com/nf-core/configs/blob/master/conf/pipeline/viralrecon/genomes.config",
-                    "hidden": true
+                    "hidden": true,
+                    "advanced": true
                 },
                 "primer_left_suffix": {
                     "type": "string",
@@ -172,7 +175,7 @@
                     "hidden": true
                 }
             },
-            "required": ["genome", "fasta"]
+            "required": ["genome"]
         },
         "nanopore_options": {
             "title": "Nanopore options",
@@ -212,16 +215,14 @@
                     "default": 100,
                     "description": "Minimum number of raw reads required per sample/barcode in order to be considered for the downstream processing steps.",
                     "fa_icon": "fas fa-hand-paper",
-                    "hidden": false,
-                    "advanced": true
+                    "hidden": true
                 },
                 "min_guppyplex_reads": {
                     "type": "integer",
                     "default": 10,
                     "description": "Minimum number of reads required after the artic guppyplex process per sample/barcode in order to be considered for the downstream processing steps.",
                     "fa_icon": "fas fa-hand-paper",
-                    "hidden": false,
-                    "advanced": true
+                    "hidden": true
                 },
                 "artic_minion_caller": {
                     "type": "string",
@@ -229,8 +230,7 @@
                     "description": "Variant caller used when running artic minion (default: 'nanopolish').",
                     "fa_icon": "fas fa-phone-volume",
                     "enum": ["nanopolish", "medaka"],
-                    "hidden": false,
-                    "advanced": true
+                    "hidden": true
                 },
                 "artic_minion_aligner": {
                     "type": "string",
@@ -238,8 +238,7 @@
                     "description": "Aligner used when running artic minion (default: 'minimap2').",
                     "fa_icon": "fas fa-map-signs",
                     "enum": ["minimap2", "bwa"],
-                    "hidden": false,
-                    "advanced": true
+                    "hidden": true
                 },
                 "artic_scheme": {
                     "type": "string",
@@ -253,7 +252,7 @@
                     "description": "Parameter passed to artic minion and required when using the '--artic_minion_caller medaka' workflow.",
                     "help_text": "See https://github.com/nanoporetech/medaka",
                     "fa_icon": "fas fa-train",
-                    "hidden": true
+                    "hidden": false
                 },
                 "skip_pycoqc": {
                     "type": "boolean",
@@ -306,16 +305,14 @@
                     "default": 50,
                     "description": "Maximum read depth used to generate ASCIIGenome screenshots for variant locii.",
                     "fa_icon": "fas fa-align-center",
-                    "hidden": false,
-                    "advanced": true
+                    "hidden": true
                 },
                 "asciigenome_window_size": {
                     "type": "integer",
                     "default": 50,
                     "description": "Maximum window size before and after variant locii used to generate ASCIIGenome screenshots.",
                     "fa_icon": "fab fa-windows",
-                    "hidden": false,
-                    "advanced": true
+                    "hidden": true
                 },
                 "skip_freyja": {
                     "type": "boolean",
@@ -325,6 +322,7 @@
                 },
                 "skip_freyja_boot": {
                     "type": "boolean",
+                    "default": false,
                     "fa_icon": "fas fa-forward",
                     "description": "Skip the bootstrapping  module of Freyja",
                     "hidden": true
@@ -338,9 +336,10 @@
                 },
                 "freyja_depthcutoff": {
                     "type": "number",
+                    "default": 1,
                     "description": "Specify a coverage depth minimum which excludes sites with coverage less than the specified value",
                     "fa_icon": "fas fa-hand-paper",
-                    "help_text": "Using the `depthcutoff` option may result in some distinct lineages now having identical barcodes, which are grouped into the format `[lineage]-like(num)` (based on their shared phylogeny) in the output.",
+                    "help_text": "Using the `depthcutoff` option may result in some distinct lineages now having identical barcodes, which are grouped into the format `[lineage]-like(num)` (based on their shared phylogeny) in the output. We set the default of 1.",
                     "hidden": false,
                     "advanced": true
                 },
@@ -377,36 +376,42 @@
                 },
                 "skip_mosdepth": {
                     "type": "boolean",
+                    "default": false,
                     "fa_icon": "fas fa-fast-forward",
                     "description": "Skip genome-wide and amplicon coverage plot generation from mosdepth output.",
                     "hidden": true
                 },
                 "skip_pangolin": {
                     "type": "boolean",
+                    "default": false,
                     "fa_icon": "fas fa-fast-forward",
                     "description": "Skip Pangolin lineage analysis for genome consensus sequence.",
                     "hidden": true
                 },
                 "skip_nextclade": {
                     "type": "boolean",
+                    "default": false,
                     "fa_icon": "fas fa-fast-forward",
                     "description": "Skip Nextclade clade assignment, mutation calling, and sequence quality checks for genome consensus sequence.",
                     "hidden": true
                 },
                 "skip_asciigenome": {
                     "type": "boolean",
+                    "default": true,
                     "fa_icon": "fas fa-fast-forward",
                     "description": "Skip variant screenshot generation with ASCIIGenome.",
                     "hidden": true
                 },
                 "skip_variants_quast": {
                     "type": "boolean",
+                    "default": false,
                     "fa_icon": "fas fa-fast-forward",
                     "description": "Skip generation of QUAST aggregated report for consensus sequences.",
                     "hidden": true
                 },
                 "skip_variants_long_table": {
                     "type": "boolean",
+                    "default": false,
                     "fa_icon": "fas fa-fast-forward",
                     "description": "Skip long table generation for reporting variants.",
                     "hidden": true
@@ -444,6 +449,7 @@
                 },
                 "kraken2_variants_host_filter": {
                     "type": "boolean",
+                    "default": false,
                     "fa_icon": "fab fa-gitkraken",
                     "description": "Remove host reads identified by Kraken2 before running variant calling steps in the pipeline.",
                     "hidden": false,
@@ -459,6 +465,7 @@
                 },
                 "save_trimmed_fail": {
                     "type": "boolean",
+                    "default": false,
                     "fa_icon": "fas fa-save",
                     "description": "Save the trimmed FastQ files in the results directory.",
                     "help_text": "By default, trimmed FastQ files will not be saved to the results directory. Specify this flag (or set to true in your config file) to copy these files to the results directory when complete.",
@@ -466,25 +473,36 @@
                 },
                 "skip_fastqc": {
                     "type": "boolean",
+                    "default": false,
                     "fa_icon": "fas fa-fast-forward",
                     "description": "Skip FastQC.",
                     "hidden": true
                 },
                 "skip_kraken2": {
                     "type": "boolean",
+                    "default": false,
                     "fa_icon": "fas fa-fast-forward",
                     "description": "Skip Kraken2 process for removing host classified reads.",
                     "hidden": true
                 },
                 "skip_fastp": {
                     "type": "boolean",
+                    "default": false,
                     "fa_icon": "fas fa-fast-forward",
                     "description": "Skip the initial read trimming step peformed by fastp.",
                     "hidden": true
                 },
                 "skip_cutadapt": {
                     "type": "boolean",
+                    "default": false,
                     "description": "Skip the amplicon trimming step with Cutadapt when using --protocol amplicon.",
+                    "fa_icon": "fas fa-fast-forward",
+                    "hidden": true
+                },
+                "skip_classification": {
+                    "type": "boolean",
+                    "default": true,
+                    "description": "Skip the classification step with viral database",
                     "fa_icon": "fas fa-fast-forward",
                     "hidden": true
                 }
@@ -500,19 +518,19 @@
             "properties": {
                 "variant_caller": {
                     "type": "string",
-                    "default": "bcftools",
+                    "default": "ivar",
                     "fa_icon": "fas fa-phone-volume",
                     "description": "Specify which variant calling algorithm you would like to use. Available options are 'ivar' (default for '--protocol amplicon') and 'bcftools' (default for '--protocol metagenomic').",
                     "enum": ["ivar", "bcftools"],
-                    "hidden": false
+                    "hidden": true
                 },
                 "consensus_caller": {
                     "type": "string",
-                    "default": "bcftools",
+                    "default": "ivar",
                     "fa_icon": "fas fa-phone-volume",
                     "description": "Specify which consensus calling algorithm you would like to use. Available options are 'bcftools' and 'ivar' (default: 'bcftools').",
                     "enum": ["ivar", "bcftools"],
-                    "hidden": false
+                    "hidden": true
                 },
                 "min_mapped_reads": {
                     "type": "integer",
@@ -524,6 +542,7 @@
                 },
                 "ivar_trim_noprimer": {
                     "type": "boolean",
+                    "default": true,
                     "description": "This option unsets the '-e' parameter in 'ivar trim' to discard reads without primers.",
                     "fa_icon": "fas fa-cut",
                     "hidden": false,
@@ -531,6 +550,7 @@
                 },
                 "ivar_trim_offset": {
                     "type": "integer",
+                    "default": true,
                     "description": "This option sets the '-x' parameter in 'ivar trim' so that reads that occur at the specified offset positions relative to primer positions will also be trimmed.",
                     "fa_icon": "fas fa-cut",
                     "help_text": "This parameter will need to be set for some amplicon-based sequencing protocols (e.g. SWIFT) as described and implemented [here](https://github.com/andersen-lab/ivar/pull/88)",
@@ -539,69 +559,77 @@
                 },
                 "filter_duplicates": {
                     "type": "boolean",
+                    "default": true,
                     "fa_icon": "fas fa-clone",
                     "description": "Filtered duplicates reads detected by Picard MarkDuplicates from alignments.",
-                    "hidden": false,
-                    "advanced": true
+                    "hidden": true
                 },
                 "save_unaligned": {
                     "type": "boolean",
+                    "default": true,
                     "fa_icon": "fas fa-save",
                     "description": "Save unaligned reads in FastQ format from Bowtie 2 to the results directory.",
                     "hidden": true
                 },
                 "save_mpileup": {
                     "type": "boolean",
+                    "default": true,
                     "fa_icon": "fas fa-save",
                     "description": "Save mpileup files generated when calling variants with iVar variants or iVar consensus.",
                     "hidden": true
                 },
                 "skip_ivar_trim": {
                     "type": "boolean",
+                    "default": false,
                     "fa_icon": "fas fa-fast-forward",
                     "description": "Skip iVar primer trimming step. Not recommended for --protocol amplicon.",
                     "hidden": true
                 },
                 "skip_markduplicates": {
                     "type": "boolean",
-                    "default": true,
+                    "default": false,
                     "fa_icon": "fas fa-fast-forward",
                     "description": "Skip picard MarkDuplicates step.",
                     "hidden": true
                 },
                 "skip_picard_metrics": {
                     "type": "boolean",
+                    "default": false,
                     "fa_icon": "fas fa-fast-forward",
                     "description": "Skip Picard CollectMultipleMetrics steps.",
                     "hidden": true
                 },
                 "skip_snpeff": {
                     "type": "boolean",
+                    "default": false,
                     "fa_icon": "fas fa-fast-forward",
                     "description": "Skip SnpEff and SnpSift annotation of variants.",
                     "hidden": true
                 },
                 "skip_consensus_plots": {
                     "type": "boolean",
+                    "default": false,
                     "fa_icon": "fas fa-fast-forward",
                     "description": "Skip creation of consensus base density plots.",
                     "hidden": true
                 },
                 "skip_consensus": {
                     "type": "boolean",
+                    "default": false,
                     "fa_icon": "fas fa-fast-forward",
                     "description": "Skip genome consensus creation step and any downstream QC.",
                     "hidden": true
                 },
                 "skip_variants": {
                     "type": "boolean",
+                    "default": false,
                     "fa_icon": "fas fa-fast-forward",
                     "description": "Specify this parameter to skip all of the variant calling and mapping steps in the pipeline.",
                     "hidden": true
                 }
             },
             "fa_icon": "fas fa-dna",
-            "required": ["variant_caller", "consensus_caller"]
+            "required": []
         },
         "illumina_de_novo_assembly_options": {
             "title": "Illumina de novo assembly options",
@@ -614,7 +642,7 @@
                     "default": "spades",
                     "description": "Specify which assembly algorithms you would like to use. Available options are 'spades', 'unicycler' and 'minia'.",
                     "fa_icon": "fas fa-random",
-                    "hidden": false
+                    "hidden": true
                 },
                 "spades_mode": {
                     "type": "string",
@@ -651,6 +679,7 @@
                 },
                 "skip_bandage": {
                     "type": "boolean",
+                    "default": false,
                     "fa_icon": "fas fa-fast-forward",
                     "description": "Skip Bandage image creation for assembly visualisation.",
                     "hidden": true
@@ -673,7 +702,7 @@
                     "type": "boolean",
                     "fa_icon": "fas fa-fast-forward",
                     "description": "Skip assembly report generation by PlasmidID.",
-                    "default": true,
+                    "default": false,
                     "hidden": true
                 },
                 "skip_assembly_quast": {
@@ -708,7 +737,7 @@
                 }
             },
             "fa_icon": "fas fa-random",
-            "required": ["assemblers"]
+            "required": []
         },
         "generic_options": {
             "title": "Generic options",
@@ -907,7 +936,56 @@
             }
         }
     },
+    "properties": {
+        "platform": { "$ref": "#/definitions/input_output_options/properties/platform" },
+        "protocol": { "$ref": "#/definitions/input_output_options/properties/protocol" },
+        "genome": { "$ref": "#/definitions/reference_genome_options/properties/genome" },
+        "primer_set": { "$ref": "#/definitions/reference_genome_options/properties/primer_set" },
+        "primer_set_version": { "$ref": "#/definitions/reference_genome_options/properties/primer_set_version" },
+
+        "fastq_dir": { "$ref": "#/definitions/nanopore_options/properties/fastq_dir" },
+        "fast5_dir": { "$ref": "#/definitions/nanopore_options/properties/fast5_dir" }
+    },
     "allOf": [
+        {
+            "if": {
+                "properties": {
+                    "platform": { "const": "nanopore" }
+                }
+            },
+            "then": {
+                "properties": {
+                    "protocol": { "enum": ["amplicon"] },
+                    "fastq_dir": { "hidden": false },
+                    "fast5_dir": { "hidden": false }
+                }
+            }
+        },
+        {
+            "if": {
+                "properties": {
+                    "platform": { "const": "illumina" }
+                }
+            },
+            "then": {
+                "nanopore_options": {
+                    "hidden": true
+                }
+            }
+        },
+        {
+            "if": {
+                "properties": {
+                    "genome": { "const": "MN908947.3" }
+                }
+            },
+            "then": {
+                "properties": {
+                    "primer_set": { "const": "artic" },
+                    "primer_set_version": { "const": 3 }
+                }
+            }
+        },
         {
             "$ref": "#/definitions/input_output_options"
         },
