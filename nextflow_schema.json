@@ -942,7 +942,6 @@
         "genome": { "$ref": "#/definitions/reference_genome_options/properties/genome" },
         "primer_set": { "$ref": "#/definitions/reference_genome_options/properties/primer_set" },
         "primer_set_version": { "$ref": "#/definitions/reference_genome_options/properties/primer_set_version" },
-
         "fastq_dir": { "$ref": "#/definitions/nanopore_options/properties/fastq_dir" },
         "fast5_dir": { "$ref": "#/definitions/nanopore_options/properties/fast5_dir" }
     },
