@@ -91,20 +91,20 @@ Each row represents a fastq file (single-end) or a pair of fastq files (paired e
 #### Illumina shotgun analysis
 
 ```bash
-nextflow run nf-core/viralrecon \
-   --input samplesheet.csv \
+nextflow run main.nf \
+   --design samplesheet.csv \
    --outdir <OUTDIR> \
    --platform illumina \
    --protocol metagenomic \
    --genome 'MN908947.3' \
-   -profile -profile <docker/singularity/.../institute>
+   -profile <docker/singularity/.../institute>
 ```
 
 #### Illumina amplicon analysis
 
 ```bash
-nextflow run nf-core/viralrecon \
-   --input samplesheet.csv \
+nextflow run main.nf \
+   --design samplesheet.csv \
    --outdir <OUTDIR> \
    --platform illumina \
    --protocol amplicon \
@@ -112,14 +112,14 @@ nextflow run nf-core/viralrecon \
    --primer_set artic \
    --primer_set_version 3 \
    --skip_assembly \
-   -profile -profile <docker/singularity/.../institute>
+   -profile <docker/singularity/.../institute>
 ```
 
 #### Nanopore amplicon analysis:
 
 ```bash
-nextflow run nf-core/viralrecon \
-   --input samplesheet.csv \
+nextflow run main.nf \
+   --design samplesheet.csv \
    --outdir <OUTDIR> \
    --platform nanopore \
    --genome 'MN908947.3' \
@@ -128,7 +128,7 @@ nextflow run nf-core/viralrecon \
    --fastq_dir fastq_pass/ \
    --fast5_dir fast5_pass/ \
    --sequencing_summary sequencing_summary.txt \
-   -profile -profile <docker/singularity/.../institute>
+   -profile <docker/singularity/.../institute>
 ```
 
 > [!WARNING]

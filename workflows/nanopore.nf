@@ -21,7 +21,7 @@ def valid_params = [
 ]
 
 def checkPathParamList = [
-    params.input, params.fastq_dir, params.fast5_dir,
+    params.design, params.fastq_dir, params.fast5_dir,
     params.sequencing_summary, params.gff,
     params.freyja_barcodes, params.freyja_lineages, params.additional_annotation
 ]
@@ -107,7 +107,7 @@ def fail_barcode_reads = [:]
 workflow NANOPORE {
 
     take:
-    ch_samplesheet // channel: samplesheet read in from --input
+    ch_samplesheet // channel: samplesheet read in from --design
     ch_genome_fasta
     ch_genome_gff
     ch_primer_bed
@@ -193,7 +193,7 @@ workflow NANOPORE {
         //
         // SUBWORKFLOW: Read in samplesheet containing sample to barcode mappings
         //
-        if (params.input) {
+        if (params.design) {
             ch_samplesheet
             .join(ch_fastq_dirs, remainder: true)
             .set { ch_fastq_dirs }
