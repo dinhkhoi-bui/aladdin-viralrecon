@@ -49,7 +49,7 @@ if (!variant_caller) { variant_caller = params.protocol == 'amplicon' ? 'ivar' :
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 */
 
-ch_multiqc_config        = file("$projectDir/assets/multiqc_config_illumina.yml", checkIfExists: true)
+ch_multiqc_config        = file("$projectDir/assets/multiqc_config.yml", checkIfExists: true)
 ch_multiqc_custom_config = params.multiqc_config ? file(params.multiqc_config) : []
 
 // Header files
@@ -754,6 +754,33 @@ workflow ILLUMINA {
 
         multiqc_report = MULTIQC.out.report.toList()
     }
+
+    //
+    //  MODULES: SUMMARIZE_DOWNLOADS
+    //
+
+    if (params.skip_markduplicates) {
+        bam_locations               = FASTQ_ALIGN_BOWTIE2.out.bam
+                                                        .map{ meta, bam -> "${params.outdir}/bowtie2/" + bam.getName()}
+    } else {
+        bam_locations               = BAM_MARKDUPLICATES_PICARD.out.bam
+                                                        .map{ meta, bam -> "${params.outdir}/MarkDuplicates/" + bam.getName()}
+    }
+
+    variants_ivar_locations         = VARIANTS_IVAR.out.tsv.map{ meta, tsv -> "${params.outdir}/variants_ivar/" + tsv.getName() }
+    consensus_ivar_locations        = CONSENSUS_IVAR.out.bases_tsv.map{ meta, bases_tsv -> "${params.outdir}/consensus_ivar/" + bases_tsv[1].getName() }
+    variants_long_table_locations   = VARIANTS_LONG_TABLE.out.long_table.map{ "${params.outdir}/variants_long_table/" + it.getName() }
+    // report_locations                = multiqc_report
+
+    bam_locations
+        .mix(variants_ivar_locations, consensus_ivar_locations, variants_long_table_locations)
+        .collectFile(name: "${params.outdir}/download_data/file_locations.txt", newLine: true )
+        .set { locations }
+
+    // SUMMARIZE_DOWNLOADS( 
+    //     locations, 
+    //     check_design.out.checked_design 
+    // )
 
     emit:
     multiqc_report                  // channel: /path/to/multiqc_report.html
