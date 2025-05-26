@@ -113,6 +113,12 @@ include { FASTQ_ALIGN_BOWTIE2           } from '../subworkflows/nf-core/fastq_al
 include { BAM_MARKDUPLICATES_PICARD     } from '../subworkflows/nf-core/bam_markduplicates_picard/main'
 include { BAM_VARIANT_DEMIX_BOOT_FREYJA } from '../subworkflows/nf-core/bam_variant_demix_boot_freyja/main'
 
+//
+// Aladdin Viralrecon modules
+//
+include { SUMMARIZE_DOWNLOADS           } from '../modules/local/summarize_downloads'
+
+
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     RUN MAIN WORKFLOW
@@ -775,12 +781,12 @@ workflow ILLUMINA {
     bam_locations
         .mix(variants_ivar_locations, consensus_ivar_locations, variants_long_table_locations)
         .collectFile(name: "${params.outdir}/download_data/file_locations.txt", newLine: true )
-        .set { locations }
+        .set { ch_locations }
 
-    // SUMMARIZE_DOWNLOADS( 
-    //     locations, 
-    //     check_design.out.checked_design 
-    // )
+    SUMMARIZE_DOWNLOADS( 
+        ch_locations, 
+        ch_input    
+    )
 
     emit:
     multiqc_report                  // channel: /path/to/multiqc_report.html
