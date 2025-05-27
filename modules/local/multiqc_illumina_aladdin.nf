@@ -1,10 +1,10 @@
-process MULTIQC {
+process MULTIQC_ALADDIN {
     label 'process_medium'
 
-    conda "bioconda::multiqc=1.25.1"
+    conda "bioconda::multiqc=1.14"
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
-        'https://depot.galaxyproject.org/singularity/multiqc:1.25.1--pyhdfd78af_0' :
-        'quay.io/biocontainers/multiqc:1.25.1--pyhdfd78af_0' }"
+        'https://depot.galaxyproject.org/singularity/multiqc:1.14--pyhdfd78af_0' :
+        'biocontainers/multiqc:1.14--pyhdfd78af_0' }"
 
     input:
     path  multiqc_files, stageAs: "?/*"
@@ -36,6 +36,7 @@ process MULTIQC {
     path ('assembly_unicycler/*')
     path ('assembly_minia/*')
     path ('freyja_demix/*')
+    path "multiqc_aladdin_viralrecon"
 
     output:
     path "*multiqc_report.html"     , emit: report
@@ -52,28 +53,23 @@ process MULTIQC {
     def args = task.ext.args ?: ''
     def config = multiqc_config ? "--config $multiqc_config" : ''
     def extra_config = extra_multiqc_config ? "--config $extra_multiqc_config" : ''
+    def title = params.project ? "--title \"Aladdin Viralrecon Report for ${params.project}\"" : ''
+    def filename = params.project ? "--filename " + params.project.replaceAll('\\W','_').replaceAll('_+','_') + "_multiqc_report" : ''
     def logo = multiqc_logo ? /--cl-config 'custom_logo: "${multiqc_logo}"'/ : ''
 
     """
-    ## Run MultiQC once to parse tool logs
-    multiqc -f $args $config $extra_config $logo.
+    python -m venv venv
+    source venv/bin/activate
+    pip install -e multiqc_aladdin_viralrecon --no-cache-dir
 
-    ## Parse YAML files dumped by MultiQC to obtain metrics
-    multiqc_to_custom_csv.py --platform illumina
-
-    ## Manually remove files that we don't want in the report
-    if grep -q ">skip_assembly<" workflow_summary_mqc.yaml; then
-        rm -f *assembly_metrics_mqc.csv
-    fi
-
-    if grep -q ">skip_variants<" workflow_summary_mqc.yaml; then
-        rm -f *variants_metrics_mqc.csv
-    fi
-
-    rm -f variants/report.tsv
-
-    ## Run MultiQC a second time
-    multiqc -f $args --ignore nextclade_clade_mqc.tsv $config $extra_config $logo .
+    multiqc \\
+        --force \\
+        $title \\
+        $filename \\
+        $args \\
+        $config \\
+        $extra_config \\
+        .
 
     cat <<-END_VERSIONS > versions.yml
     "${task.process}":

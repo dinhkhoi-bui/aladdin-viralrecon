@@ -67,7 +67,7 @@ ch_ivar_variants_header_mqc      = file("$projectDir/assets/headers/ivar_variant
 // MODULE: Loaded from modules/local/
 //
 include { CUTADAPT } from '../modules/local/cutadapt'
-include { MULTIQC  } from '../modules/local/multiqc_illumina'
+include { MULTIQC_ALADDIN as MULTIQC  } from '../modules/local/multiqc_illumina_aladdin'
 include { PLOT_MOSDEPTH_REGIONS as PLOT_MOSDEPTH_REGIONS_GENOME   } from '../modules/local/plot_mosdepth_regions'
 include { PLOT_MOSDEPTH_REGIONS as PLOT_MOSDEPTH_REGIONS_AMPLICON } from '../modules/local/plot_mosdepth_regions'
 include { KRAKEN2_UNCLASSIFIED_REMAP    } from '../modules/local/kraken2_viral_remap'
@@ -705,6 +705,7 @@ workflow ILLUMINA {
     // MODULE: MultiQC
     //
     if (!params.skip_multiqc) {
+        multiqc_plugins = Channel.fromPath("${baseDir}/assets/multiqc_plugins/", checkIfExists: true)
         summary_params                        = paramsSummaryMap(
             workflow, parameters_schema: "nextflow_schema.json")
         ch_workflow_summary                   = Channel.value(paramsSummaryMultiqc(summary_params))
@@ -756,6 +757,7 @@ workflow ILLUMINA {
             ch_unicycler_quast_multiqc.collect{it[1]}.ifEmpty([]),
             ch_minia_quast_multiqc.collect{it[1]}.ifEmpty([]),
             ch_freyja_multiqc.collect{it[1]}.ifEmpty([]),
+            multiqc_plugins
         )
 
         multiqc_report = MULTIQC.out.report.toList()
@@ -776,10 +778,10 @@ workflow ILLUMINA {
     variants_ivar_locations         = VARIANTS_IVAR.out.tsv.map{ meta, tsv -> "${params.outdir}/variants_ivar/" + tsv.getName() }
     consensus_ivar_locations        = CONSENSUS_IVAR.out.bases_tsv.map{ meta, bases_tsv -> "${params.outdir}/consensus_ivar/" + bases_tsv[1].getName() }
     variants_long_table_locations   = VARIANTS_LONG_TABLE.out.long_table.map{ "${params.outdir}/variants_long_table/" + it.getName() }
-    // report_locations                = multiqc_report
+    report_locations                = multiqc_report.map{ "${params.outdir}/multiqc/" + it[0].getName() }
 
     bam_locations
-        .mix(variants_ivar_locations, consensus_ivar_locations, variants_long_table_locations)
+        .mix(variants_ivar_locations, consensus_ivar_locations, variants_long_table_locations, report_locations)
         .collectFile(name: "${params.outdir}/download_data/file_locations.txt", newLine: true )
         .set { ch_locations }
 
