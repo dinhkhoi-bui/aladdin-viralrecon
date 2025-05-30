@@ -1,22 +1,27 @@
-# nf-core/viralrecon: Usage
+# Zymo-research/aladdin-viralrecon (illumina): Usage
 
-## :warning: Please read this documentation on the nf-core website: [https://nf-co.re/viralrecon/usage](https://nf-co.re/viralrecon/usage)
+This document describes how to use [Aladdin Viralrecon (Illumina) pipeline]()
 
-> _Documentation of pipeline parameters is generated automatically from the pipeline schema and can no longer be found in markdown files._
+## Table of contents
+1.  [Input and Output Options](#input-and-output-options)
+2.  [Main options](#main-options)
+3.  [FastQ Preprocessing](#fastq-preprocessing)
+4.  [Preprocessing](#preprocessing)
+5.  [Variant calling](#variant-calling)
+6.  [De novo assembly](#de-novo-assembly)
+7.  [Visualization](#visualization)
+8.  [Institutional config options](#institutional-config-options)
+9.  [Max job request options](#max-job-options)
+10. [Generic options](#generic-options)
 
-## Pipeline parameters
 
-Please provide pipeline parameters via the CLI or Nextflow `-params-file` option. Custom config files including those provided by the `-c` Nextflow option can be used to provide any configuration except for parameters; see [docs](https://nf-co.re/usage/configuration#custom-configuration-files).
+## Introduction
 
-## Samplesheet format
+Nextflow handles job submissions on SLURM or other environments, and supervises running the jobs. Thus the Nextflow process must run until the pipeline is finished. We recommend that you put the process running in the background through screen / tmux or similar tool. Alternatively you can run nextflow within a cluster job submitted your job scheduler.
 
-### Illumina
+It is recommended to limit the Nextflow Java virtual machines memory. We recommend adding the following line to your environment (typically in ~/.bashrc or ~./bash_profile):
 
 You will need to create a samplesheet with information about the samples you would like to analyse before running the pipeline. Use this parameter to specify its location. It has to be a comma-separated file with 3 columns, and a header row as shown in the examples below.
-
-```bash
---input '[path to samplesheet file]'
-```
 
 ### Multiple runs of the same sample
 
@@ -37,65 +42,6 @@ SAMPLE_2,AEG588A2_S4_L003_R1_001.fastq.gz,
 
 > **NB:** Dashes (`-`) and spaces in sample names are automatically converted to underscores (`_`) to avoid downstream issues in the pipeline.
 
-### Nanopore
-
-You have the option to provide a samplesheet to the pipeline that maps sample ids to barcode ids. This allows you to associate barcode ids to clinical/public database identifiers that can be used to QC or pre-process the data with more appropriate sample names.
-
-```console
---input '[path to samplesheet file]'
-```
-
-It has to be a comma-separated file with 2 columns. A final samplesheet file may look something like the one below:
-
-```console
-sample,barcode
-21X983255,1
-70H209408,2
-49Y807476,3
-70N209581,4
-```
-
-| Column    | Description                                                                           |
-| --------- | ------------------------------------------------------------------------------------- |
-| `sample`  | Custom sample name, one per barcode.                                                  |
-| `barcode` | Barcode identifier attributed to that sample during multiplexing. Must be an integer. |
-
-> **NB:** Dashes (`-`) and spaces in sample names are automatically converted to underscores (`_`) to avoid downstream issues in the pipeline.
-
-## Nanopore input format
-
-For Nanopore data the pipeline only supports amplicon-based analysis obtained from primer sets created and maintained by the [ARTIC Network](https://artic.network/). The [artic minion](https://artic.readthedocs.io/en/latest/commands/) tool from the [ARTIC field bioinformatics pipeline](https://github.com/artic-network/fieldbioinformatics) is used to align reads, call variants and to generate the consensus sequence.
-
-### Nanopolish
-
-The default variant caller used by artic minion is [Nanopolish](https://github.com/jts/nanopolish) and this requires that you provide `*.fastq`, `*.fast5` and `sequencing_summary.txt` files as input to the pipeline. These files can typically be obtained after demultiplexing and basecalling the sequencing data using [Guppy](https://nanoporetech.com/nanopore-sequencing-data-analysis) (see [ARTIC SOP docs](https://artic.network/ncov-2019/ncov2019-bioinformatics-sop.html)). This pipeline requires that the files are organised in the format outlined below and gzip compressed files are also accepted:
-
-```console
-.
-└── fastq_pass
-    └── barcode01
-        ├── FAP51364_pass_barcode01_97ca62ca_0.fastq
-        ├── FAP51364_pass_barcode01_97ca62ca_1.fastq
-        ├── FAP51364_pass_barcode01_97ca62ca_2.fastq
-        ├── FAP51364_pass_barcode01_97ca62ca_3.fastq
-        ├── FAP51364_pass_barcode01_97ca62ca_4.fastq
-        ├── FAP51364_pass_barcode01_97ca62ca_5.fastq
-    <TRUNCATED>
-```
-
-```console
-.
-└── fast5_pass
-    ├── barcode01
-        ├── FAP51364_pass_barcode01_97ca62ca_0.fast5
-        ├── FAP51364_pass_barcode01_97ca62ca_1.fast5
-        ├── FAP51364_pass_barcode01_97ca62ca_2.fast5
-        ├── FAP51364_pass_barcode01_97ca62ca_3.fast5
-        ├── FAP51364_pass_barcode01_97ca62ca_4.fast5
-        ├── FAP51364_pass_barcode01_97ca62ca_5.fast5
-    <TRUNCATED>
-```
-
 The command to run the pipeline would then be:
 
 ```console
@@ -112,25 +58,7 @@ nextflow run nf-core/viralrecon \
     -profile <docker/singularity/podman/conda/institute>
 ```
 
-### Medaka
 
-You also have the option of using [Medaka](https://github.com/nanoporetech/medaka) as an alternative variant caller to Nanopolish via the `--artic_minion_caller medaka` parameter. Medaka is faster than Nanopolish, performs mostly the same and can be run directly from `fastq` input files as opposed to requiring the `fastq`, `fast5` and `sequencing_summary.txt` files required to run Nanopolish. You must provide the appropriate [Medaka model](https://github.com/nanoporetech/medaka#models) via the `--artic_minion_medaka_model` parameter if using `--artic_minion_caller medaka`. The `fastq` files have to be organised in the same way as for Nanopolish as outlined in the section above.
-
-The command to run the pipeline would then be:
-
-```console
-nextflow run nf-core/viralrecon \
-    --input samplesheet.csv \
-    --outdir <OUTDIR> \
-    --platform nanopore \
-    --genome 'MN908947.3' \
-    --primer_set 'artic' \
-    --primer_set_version 3 \
-    --fastq_dir fastq_pass/ \
-    --artic_minion_caller medaka \
-    --artic_minion_medaka_model r941_min_high_g360 \
-    -profile <docker/singularity/podman/conda/institute>
-```
 
 ## Illumina primer sets
 

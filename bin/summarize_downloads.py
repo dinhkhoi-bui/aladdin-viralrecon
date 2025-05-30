@@ -19,21 +19,18 @@ def summarize_downloads(locations, design):
 
     """
     :param locations: a file containing locations of files on S3
-    :param design: the design file containing group and sample labels
+    :param design: the design file containing sample labels
     """
 
     file_info = dict()
 
-    # Read the desgin file to collect valid sample and group labels
+    # Read the desgin file to collect valid sample
     logger.info("Reding design file...")
-    groups = set()
     samples = set()
     with open(design, 'r') as fh:
         data = csv.DictReader(fh)
         for row in data:
             samples.add(row['sample'])
-            if len(row['group']):
-                groups.add(row['group'])
 
     # Define what to do with each type of files
     categories = {
@@ -58,21 +55,13 @@ def summarize_downloads(locations, design):
                     file_type, scope = values
                     info['file_type'] = file_type
                     info['scope'] = scope
-                    if scope in ['samples', 'comparisons']:
+                    if scope in ['samples']:
                         sname = fn.replace(suffix, '')
-                        if scope == 'samples':
-                            # Check if the parsed sample name is in the original design
-                            if sname in samples:
-                                info['sample'] = sname
-                            else:
-                                logger.error("Parsed sample name from {} not found in the design file".format(fn))
+                        # Check if the parsed sample name is in the original design
+                        if sname in samples:
+                            info['sample'] = sname
                         else:
-                            # Check if the parsed group names are in the original design
-                            g1, g2 = sname.split('_vs_')
-                            if g1 in groups and g2 in groups:
-                                info['comparison'] = sname
-                            else:
-                                logger.error("Parsed group names from {} not found in the design file".format(fn))
+                            logger.error("Parsed sample name from {} not found in the design file".format(fn))
                     file_info[fn] = info
                     break
             else:

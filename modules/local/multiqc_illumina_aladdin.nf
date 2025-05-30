@@ -62,6 +62,13 @@ process MULTIQC_ALADDIN {
     source venv/bin/activate
     pip install -e multiqc_aladdin_viralrecon --no-cache-dir
 
+    ## Run MultiQC once to parse tool logs
+    multiqc -f $args $config $extra_config $logo.
+
+    ## Parse YAML files dumped by MultiQC to obtain metrics
+    multiqc_to_custom_csv.py --platform illumina
+
+    ## Run again to generate the finalized report
     multiqc \\
         --force \\
         $title \\
