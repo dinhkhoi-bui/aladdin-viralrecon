@@ -68,6 +68,8 @@ ch_ivar_variants_header_mqc      = file("$projectDir/assets/headers/ivar_variant
 //
 include { CUTADAPT } from '../modules/local/cutadapt'
 include { MULTIQC_ALADDIN as MULTIQC  } from '../modules/local/multiqc_illumina_aladdin'
+include { MULTIQC_PANGOLIN } from '../modules/local/concise_report'
+
 include { PLOT_MOSDEPTH_REGIONS as PLOT_MOSDEPTH_REGIONS_GENOME   } from '../modules/local/plot_mosdepth_regions'
 include { PLOT_MOSDEPTH_REGIONS as PLOT_MOSDEPTH_REGIONS_AMPLICON } from '../modules/local/plot_mosdepth_regions'
 include { KRAKEN2_UNCLASSIFIED_REMAP    } from '../modules/local/kraken2_viral_remap'
@@ -760,7 +762,21 @@ workflow ILLUMINA {
             multiqc_plugins
         )
 
-        multiqc_report = MULTIQC.out.report.toList()
+        //
+        // MODULE: Generate concise report for Aladdin
+        //
+        ch_multiqc_config_concise = file("$projectDir/assets/multiqc_config_pangolin.yml", checkIfExists: true)
+        MULTIQC_PANGOLIN (
+            ch_multiqc_config_concise,
+            ch_multiqc_logo.toList(),
+            ch_fail_reads_multiqc.collectFile(name: 'fail_mapped_reads_mqc.tsv').ifEmpty([]),
+            ch_fail_mapping_multiqc.collectFile(name: 'fail_mapped_samples_mqc.tsv').ifEmpty([]),
+            ch_pangolin_multiqc.collect{it[1]}.ifEmpty([]),
+            multiqc_plugins
+        )
+
+        multiqc_report          = MULTIQC.out.report
+        multiqc_report_pangolin = MULTIQC_PANGOLIN.out.report
     }
 
     //
@@ -778,7 +794,10 @@ workflow ILLUMINA {
     variants_ivar_locations         = VARIANTS_IVAR.out.tsv.map{ meta, tsv -> "${params.outdir}/variants_ivar/" + tsv.getName() }
     consensus_ivar_locations        = CONSENSUS_IVAR.out.bases_tsv.map{ meta, bases_tsv -> "${params.outdir}/consensus_ivar/" + bases_tsv[1].getName() }
     variants_long_table_locations   = VARIANTS_LONG_TABLE.out.long_table.map{ "${params.outdir}/variants_long_table/" + it.getName() }
-    report_locations                = multiqc_report.map{ "${params.outdir}/multiqc/" + it[0].getName() }
+
+    report_locations                = multiqc_report
+        .mix(multiqc_report_pangolin)
+        .map{ "${params.outdir}/multiqc/" +  it[0].getName() }
 
     bam_locations
         .mix(variants_ivar_locations, consensus_ivar_locations, variants_long_table_locations, report_locations)
