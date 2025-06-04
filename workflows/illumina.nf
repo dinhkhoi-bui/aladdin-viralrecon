@@ -769,8 +769,7 @@ workflow ILLUMINA {
         MULTIQC_PANGOLIN (
             ch_multiqc_config_concise,
             ch_multiqc_logo.toList(),
-            ch_fail_reads_multiqc.collectFile(name: 'fail_mapped_reads_mqc.tsv').ifEmpty([]),
-            ch_fail_mapping_multiqc.collectFile(name: 'fail_mapped_samples_mqc.tsv').ifEmpty([]),
+            FASTQ_TRIM_FASTP_FASTQC.out.trim_json.collect{it[1]}.ifEmpty([]),
             ch_pangolin_multiqc.collect{it[1]}.ifEmpty([]),
             multiqc_plugins
         )

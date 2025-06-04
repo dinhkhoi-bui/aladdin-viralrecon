@@ -1,10 +1,10 @@
 process MULTIQC_ALADDIN {
     label 'process_medium'
 
-    conda "bioconda::multiqc=1.14"
+    conda "bioconda::multiqc=1.16"
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
-        'https://depot.galaxyproject.org/singularity/multiqc:1.14--pyhdfd78af_0' :
-        'biocontainers/multiqc:1.14--pyhdfd78af_0' }"
+        'https://depot.galaxyproject.org/singularity/multiqc:1.16--pyhdfd78af_0' :
+        'biocontainers/multiqc:1.16--pyhdfd78af_0' }"
 
     input:
     path  multiqc_files, stageAs: "?/*"

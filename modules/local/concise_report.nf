@@ -1,17 +1,16 @@
 process MULTIQC_PANGOLIN {
     label 'process_medium'
 
-    conda "bioconda::multiqc=1.14"
+    conda "bioconda::multiqc=1.16"
     container "${ workflow.containerEngine == 'singularity' && !task.ext.singularity_pull_docker_container ?
-        'https://depot.galaxyproject.org/singularity/multiqc:1.14--pyhdfd78af_0' :
-        'biocontainers/multiqc:1.14--pyhdfd78af_0' }"
+        'https://depot.galaxyproject.org/singularity/multiqc:1.16--pyhdfd78af_0' :
+        'biocontainers/multiqc:1.16--pyhdfd78af_0' }"
 
     input:
     path(multiqc_config)
     path(multiqc_logo)
-    path fail_reads_summary
-    path fail_mapping_summary
-    path ('variants/*')
+    path('fastp/*')
+    path('variants/*')
     path "multiqc_aladdin_viralrecon"
 
     output:
@@ -32,7 +31,12 @@ process MULTIQC_PANGOLIN {
     source venv/bin/activate
     pip install -e multiqc_aladdin_viralrecon --no-cache-dir
 
-    ## Run MultiQC once to parse tool logs
-    multiqc -f $args $config $logo.
+    multiqc \\
+        --force \\
+        $title \\
+        $filename \\
+        $args \\
+        $config \\
+        .
     """
 }

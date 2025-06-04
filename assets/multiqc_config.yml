@@ -112,6 +112,16 @@ module_order:
         total_number_contigs_multiplier: 0.001
         total_number_contigs_suffix: "K"
 
+general_stats_merge:
+  "R1":
+    - "_R1"
+    - type: regex
+      pattern: "[_.-][rR]?1$"
+  "R2":
+    - "_R2"
+    - type: regex
+      pattern: "[_.-][rR]?2$"
+
 report_section_order:
   fail_mapped_reads:
     after: summary_variants_metrics
@@ -122,13 +132,19 @@ report_section_order:
   summary_assembly_metrics:
     after: cutadapt
   amplicon_heatmap:
-    before: summary_assembly_metrics
+    order: -1000
   ivar_variants:
     before: mosdepth
-  software_versions:
+  nextclade_clade:
+    before: pangolin
+  Zymo-Research-aladdin-viralrecon-summary:
     order: -1001
-  nf-core-viralrecon-summary:
+  software_versions:
     order: -1002
+  Zymo-Research-aladdin-viralrecon-summary:
+    order: -1003
+  nf-core-viralrecon-methods-description:
+    order: -1004
 
 bcftools:
   collapse_complementary_changes: true
@@ -301,9 +317,13 @@ extra_fn_clean_exts:
   - ".unclassified"
   - "_MN908947.3"
   - " MN908947.3"
+  - "_R1"
+  - "_R2"
 
 extra_fn_clean_trim:
   - "Consensus_"
+  - "_1"
+  - "_2"
 
 # # Customise the module search patterns to speed up execution time
 # #  - Skip module sub-tools that we are not interested in

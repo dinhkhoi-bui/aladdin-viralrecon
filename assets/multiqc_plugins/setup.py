@@ -14,7 +14,7 @@ setup(
     description = "MultiQC plugins for viralrecon pipeline",
     packages = find_packages(),
     include_package_data = True,
-    install_requires = ['multiqc==1.14'],
+    install_requires = ['multiqc==1.16'],
     entry_points = {
         'multiqc.templates.v1': [
             'aladdin = multiqc_aladdin_viralrecon.templates.aladdin'

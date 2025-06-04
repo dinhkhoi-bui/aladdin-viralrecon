@@ -7,34 +7,31 @@ report_comment: "If you have any question regarding this report, please contact 
 data_format: "yaml"
 
 max_table_rows: 10000
+
+disable_version_detection: true
+skip_versions_section: true
 skip_generalstats: true
 
 run_modules:
-  - fastqc
   - fastp
-  - kraken
   - pangolin
 
 module_order:
-  - fastqc:
-      name: "PREPROCESS: FastQC (raw reads)"
-      info: "This section of the report shows FastQC results for the raw reads before adapter trimming."
-      path_filters:
-        - "./fastqc/*.zip"
   - fastp:
       name: "PREPROCESS: fastp (adapter trimming)"
       info: "This section of the report shows fastp results for reads after adapter and quality trimming."
-  - kraken:
-      name: "PREPROCESS: Kraken 2"
-      info: "This section of the report shows Kraken 2 classification results for reads after adapter trimming with fastp."
-      path_filters:
-        - "./kraken2/*kraken2.report.txt"
-      taxonomic_level: "species"
-      include_bracken: false
-      display_tree: true
-      top_n: 10
   - pangolin:
       name: "VARIANTS: Pangolin"
       info: "This section of the report shows Pangolin lineage analysis results for the called variants."
       path_filters:
         - "./variants/*.pangolin.csv"
+
+report_section_order:
+  fastp/fastp_filtered_reads_chart_plot:
+    skip: true
+  fastp/fastp_insert_size_plot:
+    skip: true
+  fastp/fastp_seq_content_gc_plot:
+    skip: true
+  fastp/fastp_seq_content_n_plot:
+    skip: true
