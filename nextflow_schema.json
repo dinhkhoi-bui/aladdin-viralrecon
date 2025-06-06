@@ -36,7 +36,7 @@
                     "fa_icon": "fas fa-hdd",
                     "description": "NGS platform used to sequence the samples.",
                     "enum": ["illumina", "nanopore"],
-                    "hidden": false
+                    "hidden": true
                 },
                 "protocol": {
                     "type": "string",
@@ -44,7 +44,7 @@
                     "description": "Specifies the type of protocol used for sequencing.",
                     "fa_icon": "fas fa-vials",
                     "enum": ["metagenomic", "amplicon"],
-                    "hidden": false
+                    "hidden": true
                 },
                 "outdir": {
                     "type": "string",
@@ -813,7 +813,8 @@
                 "multiqc_methods_description": {
                     "type": "string",
                     "description": "Custom MultiQC yaml file containing HTML including a methods description.",
-                    "fa_icon": "fas fa-cog"
+                    "fa_icon": "fas fa-cog",
+                    "hidden": true
                 },
                 "validate_params": {
                     "type": "boolean",
